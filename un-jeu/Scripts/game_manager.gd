@@ -3,6 +3,7 @@ extends Node2D
 ## Références aux nœuds de la scène
 @onready var sol: TileMapLayer = $Sol
 @onready var decoration: TileMapLayer = $Decoration
+@onready var maisons: TileMapLayer = $Maisons
 @onready var buildings_container: Node2D = $Buildings
 @onready var preview_sprite: Sprite2D = $PreviewSprite
 @onready var batiment_1_btn: TextureButton = $CanvasLayer/BarreBatiment/HBoxContainer/Batiment1
@@ -15,7 +16,6 @@ extends Node2D
 @onready var money: Label = $CanvasLayer/PanelArgent/HBoxContainer/BoxArgent/Argent
 @onready var progress_bar_science: ProgressBar = $CanvasLayer/PanelScience/ContainerScience/BoxScience/ProgressBarScience
 @onready var science: Label = $CanvasLayer/PanelScience/ContainerScience/BoxScience/ProgressBarScience/Science
-@onready var panel_population: PanelContainer = $CanvasLayer/PanelPopulation
 @onready var population_label: Label = $CanvasLayer/PanelPopulation/PopulationLabel
 @onready var population_manager: PopulationManager = $PopulationManager
 
@@ -170,6 +170,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		# Touche Échap pour annuler
 		elif event.is_action_pressed("ui_cancel"):
 			cancel_deletion()
+	
+	## DEBUG : Touche P pour accélérer l'arrivée d'habitants et tester l'urbanisme
+	if event is InputEventKey and event.pressed and event.keycode == KEY_P:
+		population_manager.add_citizens(4)
 
 ## Vérifie si toutes les cases requises sont sur le sol et non occupées
 func can_place(top_left: Vector2i, footprint: Vector2i) -> bool:
@@ -194,8 +198,11 @@ func can_place(top_left: Vector2i, footprint: Vector2i) -> bool:
 				if tiledata_route and tiledata_route.get_custom_data("interdit"):
 					return false
 			
-			# 2. La case ne doit pas être déjà occupée par un bâtiment
+			# 2. La case ne doit pas être déjà occupée par un bâtiment ou une habitation
 			if occupied_cells.has(check_cell):
+				return false
+			
+			if maisons and maisons.get_cell_source_id(check_cell) != -1:
 				return false
 				
 	return true
@@ -349,21 +356,7 @@ func _on_population_changed(_total: int) -> void:
 	show_population()
 
 func show_population() -> void:
-	var total: int = population_manager.get_total_population()
-	population_label.text = "Habitants : %d" % total
-	panel_population.tooltip_text = (
-		"Cherchent : %d | Étudiants : %d | Travail : %d\n" % [
-			population_manager.get_count_by_status(Citizen.Status.SEEKING),
-			population_manager.get_count_by_status(Citizen.Status.STUDYING),
-			population_manager.get_count_by_status(Citizen.Status.WORKING)
-		] +
-		"Niv 0 : %d | Niv 1 : %d | Niv 2 : %d | Niv 3 : %d" % [
-			population_manager.get_count_by_education(Citizen.EducationLevel.NONE),
-			population_manager.get_count_by_education(Citizen.EducationLevel.BREVET),
-			population_manager.get_count_by_education(Citizen.EducationLevel.BAC),
-			population_manager.get_count_by_education(Citizen.EducationLevel.SUPERIEUR)
-		]
-	)
+	population_label.text = "Habitants : %d" % population_manager.get_total_population()
 
 ## Gestion du WorldTimer
 

@@ -3,17 +3,17 @@ extends RefCounted
 
 ## Niveaux de diplôme d'un habitant (0 à 3 selon le CDC)
 enum EducationLevel {
-	NONE = 0,      # Sans diplôme (agriculture, mines, ouvriers manuels)
-	BREVET = 1,    # Certificat / Brevet (industrie mécanisée, artisanat)
-	BAC = 2,       # Baccalauréat (industrie avancée, administration, services)
-	SUPERIEUR = 3  # Diplôme du supérieur (recherche, santé, haute technologie)
+	NONE = 0,     
+	BREVET = 1,    
+	BAC = 2,      
+	SUPERIEUR = 3  
 }
 
 ## Statut d'activité actuel de l'habitant
 enum Status {
-	SEEKING,  # Cherche une formation ou un emploi (chômage / nouvel arrivant)
-	STUDYING, # Étudiant actuellement inscrit dans une école
-	WORKING   # Occupe un poste dans une entreprise
+	SEEKING, 
+	STUDYING,
+	WORKING   
 }
 
 var education_level: EducationLevel = EducationLevel.NONE
