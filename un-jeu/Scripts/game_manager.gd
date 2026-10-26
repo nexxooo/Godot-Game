@@ -11,16 +11,19 @@ extends Node2D
 # Bouton pour afficher la route des innovations
 @onready var zoomin_route_btn: TextureButton = $CanvasLayer/PanelScience/ContainerScience/ZoominRoute
 
-## Ressources : argent et points de science
+## Ressources : argent, science et population
 @onready var money: Label = $CanvasLayer/PanelArgent/HBoxContainer/BoxArgent/Argent
 @onready var progress_bar_science: ProgressBar = $CanvasLayer/PanelScience/ContainerScience/BoxScience/ProgressBarScience
 @onready var science: Label = $CanvasLayer/PanelScience/ContainerScience/BoxScience/ProgressBarScience/Science
+@onready var panel_population: PanelContainer = $CanvasLayer/PanelPopulation
+@onready var population_label: Label = $CanvasLayer/PanelPopulation/PopulationLabel
+@onready var population_manager: PopulationManager = $PopulationManager
 
 ## Timer
 # Label du timer qui affiche le temps à chaque fois
 @onready var timer_live: Label = $CanvasLayer/PanneauTimer/TimerLive
 # WorldTimer
-@onready var world_timer: Timer = $WorldTimer
+@onready var world_timer: GameTimer = $WorldTimer
 
 ## Autres
 # Route des innovations
@@ -86,7 +89,12 @@ func _ready() -> void:
 	zoomin_route_btn.pressed.connect(_on_zoomin_route_pressed)
 	popup.hide()
 	
-	# Lancement du Timer
+	# Affichage initial et connexion de la population
+	population_manager.population_changed.connect(_on_population_changed)
+	show_population()
+	
+	# Affichage de la date initiale (1900/01/01) et lancement du Timer
+	timer_live.text = world_timer.get_formatted_date()
 	world_timer.second_tick.connect(_on_timer_tick)
 
 func _process(_delta: float) -> void:
@@ -335,6 +343,27 @@ func lose_science(score):
 		score_science = 0
 	else:
 		score_science -= score
+
+### Gestion/Affichage de la population
+func _on_population_changed(_total: int) -> void:
+	show_population()
+
+func show_population() -> void:
+	var total: int = population_manager.get_total_population()
+	population_label.text = "Habitants : %d" % total
+	panel_population.tooltip_text = (
+		"Cherchent : %d | Étudiants : %d | Travail : %d\n" % [
+			population_manager.get_count_by_status(Citizen.Status.SEEKING),
+			population_manager.get_count_by_status(Citizen.Status.STUDYING),
+			population_manager.get_count_by_status(Citizen.Status.WORKING)
+		] +
+		"Niv 0 : %d | Niv 1 : %d | Niv 2 : %d | Niv 3 : %d" % [
+			population_manager.get_count_by_education(Citizen.EducationLevel.NONE),
+			population_manager.get_count_by_education(Citizen.EducationLevel.BREVET),
+			population_manager.get_count_by_education(Citizen.EducationLevel.BAC),
+			population_manager.get_count_by_education(Citizen.EducationLevel.SUPERIEUR)
+		]
+	)
 
 ## Gestion du WorldTimer
 

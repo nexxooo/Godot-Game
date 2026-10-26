@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://ditmhr1q5h52t" path="res://Scripts/camera.gd" id="8_o5784"]
 [ext_resource type="Texture2D" uid="uid://bg3k27cr745aq" path="res://Assets/Boutons/moins.png" id="9_d2tun"]
 [ext_resource type="Texture2D" uid="uid://q51w8joijb8q" path="res://Assets/Boutons/exit.png" id="10_d2tun"]
+[ext_resource type="Script" uid="uid://b7hlhr4wceuxm" path="res://Scripts/population_manager.gd" id="11_pop_mgr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_sdcb8"]
 texture = ExtResource("2_1mf5u")
@@ -1040,7 +1041,21 @@ offset_bottom = 51.0
 
 [node name="TimerLive" type="Label" parent="CanvasLayer/PanneauTimer" unique_id=1662757551]
 layout_mode = 2
+text = "1900/01/01"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PanelPopulation" type="PanelContainer" parent="CanvasLayer" unique_id=1482903412]
+offset_left = 712.0
+offset_top = 1.0
+offset_right = 876.0
+offset_bottom = 51.0
+
+[node name="PopulationLabel" type="Label" parent="CanvasLayer/PanelPopulation" unique_id=1938472615]
+layout_mode = 2
+text = "Habitants : 4"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PanelArgent" type="PanelContainer" parent="CanvasLayer" unique_id=290735369]
 offset_left = 892.0
@@ -1139,6 +1154,10 @@ stretch_mode = 5
 [node name="WorldTimer" type="Timer" parent="." unique_id=573023174]
 autostart = true
 script = ExtResource("7_cx2iu")
+
+[node name="PopulationManager" type="Node" parent="." unique_id=784120951 node_paths=PackedStringArray("world_timer")]
+script = ExtResource("11_pop_mgr")
+world_timer = NodePath("../WorldTimer")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=553734150]
 position = Vector2(242.33334, 149)
